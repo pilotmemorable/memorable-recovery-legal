@@ -1,0 +1,20 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reset password · Memorable Recovery</title>
+<style>:root{--bg:#06222c;--ink:#eaf6f8;--mut:#8fb4bd;--amb:#f6a623}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 -apple-system,BlinkMacSystemFont,Inter,Segoe UI,Arial,sans-serif}main{max-width:460px;margin:0 auto;padding:48px 20px}input{width:100%;padding:12px;margin:8px 0;border-radius:10px;border:1px solid #1d5164;background:#0e3340;color:var(--ink);font-size:16px}button{width:100%;padding:12px;border:0;border-radius:12px;background:linear-gradient(#ffb840,#f09a10);color:#2b1a00;font-weight:700;font-size:16px;cursor:pointer}#m{margin-top:14px;color:var(--mut)}</style></head>
+<body><main><h1 id="t">Set a new password</h1>
+<p id="d">Choose a new password for your Memorable Recovery account (at least 8 characters).</p>
+<input id="p1" type="password" autocomplete="new-password" placeholder="New password"><input id="p2" type="password" autocomplete="new-password" placeholder="Repeat password">
+<button id="b">Save password</button><p id="m"></p></main>
+<script>
+const tr=(navigator.language||'').startsWith('tr');
+const S=tr?{t:'Yeni şifre belirle',d:'Memorable Recovery hesabın için yeni bir şifre seç (en az 8 karakter).',p1:'Yeni şifre',p2:'Şifreyi tekrar yaz',b:'Şifreyi kaydet',short:'Şifre en az 8 karakter olmalı.',diff:'Şifreler aynı değil.',nolink:'Bağlantı geçersiz veya süresi dolmuş. Uygulamadan yeniden iste.',ok:'Şifren güncellendi. Uygulamaya dönüp giriş yapabilirsin.',fail:'Şifre güncellenemedi. Bağlantıyı yeniden iste.'}:
+{t:'Set a new password',d:'Choose a new password for your Memorable Recovery account (at least 8 characters).',p1:'New password',p2:'Repeat password',b:'Save password',short:'Use at least 8 characters.',diff:'Passwords do not match.',nolink:'This link is invalid or expired. Request a new one in the app.',ok:'Your password was updated. Return to the app and sign in.',fail:'Could not update the password. Request a new link.'};
+const $=i=>document.getElementById(i);$('t').textContent=S.t;$('d').textContent=S.d;$('p1').placeholder=S.p1;$('p2').placeholder=S.p2;$('b').textContent=S.b;
+const h=new URLSearchParams(location.hash.slice(1));const tok=h.get('access_token');const isRec=h.get('type')==='recovery';
+history.replaceState(null,'',location.pathname);
+const URL_='https://bjldshtoiyzsrbcjvkhp.supabase.co';
+if(!tok||!isRec){$('m').textContent=S.nolink;$('b').disabled=true;}
+$('b').onclick=async()=>{const a=$('p1').value;if(a.length<8)return $('m').textContent=S.short;if(a!==$('p2').value)return $('m').textContent=S.diff;
+ try{const r=await fetch(URL_+'/auth/v1/user',{method:'PUT',headers:{'Content-Type':'application/json',apikey:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJqbGRzaHRvaXl6c3JiY2p2a2hwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUwMTUyMzgsImV4cCI6MjExMDU5MTIzOH0.OjeKdVzBo4T9JM5zXqh3y7RqgwALH32QZvfLrOVtMh8',Authorization:'Bearer '+tok},body:JSON.stringify({password:a})});
+ $('m').textContent=r.ok?S.ok:S.fail;if(r.ok)$('b').disabled=true;}catch(e){$('m').textContent=S.fail;}};
+</script></body></html>
